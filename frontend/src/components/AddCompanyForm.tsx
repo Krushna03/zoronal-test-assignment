@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { createCompany, type CreateCompanyPayload } from '../api/companies';
 import type { Company } from '../types';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DialogFooter } from '@/components/ui/dialog';
+import { FieldError } from '@/components/ui/field-error';
 import { cn } from '@/lib/utils';
 
 interface AddCompanyFormProps {
@@ -27,15 +29,55 @@ const initialState: CreateCompanyPayload = {
   logoBgColor: '#1F2A44',
 };
 
+type FieldErrors = Partial<Record<keyof CreateCompanyPayload, string>>;
+
+const validate = (form: CreateCompanyPayload): FieldErrors => {
+  const errors: FieldErrors = {};
+
+  if (!form.name.trim()) {
+    errors.name = 'Company name is required.';
+  } else if (form.name.trim().length < 2) {
+    errors.name = 'Name must be at least 2 characters.';
+  }
+
+  if (!form.city.trim()) {
+    errors.city = 'City is required.';
+  }
+
+  if (!form.address.trim()) {
+    errors.address = 'Address is required.';
+  } else if (form.address.trim().length < 5) {
+    errors.address = 'Please enter a full address.';
+  }
+
+  if (!form.foundedOn) {
+    errors.foundedOn = 'Please pick a founded date.';
+  } else if (new Date(form.foundedOn) > new Date()) {
+    errors.foundedOn = 'Founded date cannot be in the future.';
+  }
+
+  if (form.logoText && form.logoText.length > 4) {
+    errors.logoText = 'Logo text must be 4 characters or less.';
+  }
+
+  return errors;
+};
+
 export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => {
   const [form, setForm] = useState<CreateCompanyPayload>(initialState);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   const update =
     <K extends keyof CreateCompanyPayload>(key: K) =>
-    (value: CreateCompanyPayload[K]) =>
+    (value: CreateCompanyPayload[K]) => {
       setForm((p) => ({ ...p, [key]: value }));
+      setErrors((prev) => {
+        if (!prev[key]) return prev;
+        const { [key]: _removed, ...rest } = prev;
+        return rest;
+      });
+    };
 
   const handleFoundedOnSelect = (date: Date | undefined) => {
     update('foundedOn')(date ? format(date, 'yyyy-MM-dd') : '');
@@ -45,36 +87,35 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    if (!form.name.trim() || !form.address.trim() || !form.city.trim() || !form.foundedOn) {
-      setError('Please fill in name, address, city, and founded date.');
+    const validationErrors = validate(form);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      toast.error('Please fix the highlighted fields before saving.');
       return;
     }
 
+    setErrors({});
     setSubmitting(true);
     try {
       const created = await createCompany({
         ...form,
         logoText: form.logoText?.trim() || form.name.charAt(0).toUpperCase(),
       });
+      toast.success(`${created.name} added successfully.`);
       onCreated(created);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create company');
+      const message =
+        err instanceof Error ? err.message : 'Failed to create company';
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col">
+    <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
       <div className="p-6 space-y-4">
-        {error && (
-          <div className="rounded-md bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2">
-            {error}
-          </div>
-        )}
-
         <div>
           <Label htmlFor="company-name">Company Name *</Label>
           <Input
@@ -82,8 +123,10 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
             value={form.name}
             onChange={(e) => update('name')(e.target.value)}
             placeholder="e.g., Graffersid Web and App Development"
-            required
+            error={Boolean(errors.name)}
+            aria-describedby={errors.name ? 'company-name-error' : undefined}
           />
+          <FieldError message={errors.name} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -94,8 +137,10 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
               value={form.city}
               onChange={(e) => update('city')(e.target.value)}
               placeholder="e.g., Indore, Madhya Pradesh, India"
-              required
+              error={Boolean(errors.city)}
+              aria-describedby={errors.city ? 'company-city-error' : undefined}
             />
+            <FieldError message={errors.city} />
           </div>
           <div className="flex flex-col">
             <Label htmlFor="company-founded">Founded On *</Label>
@@ -107,7 +152,9 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
                   variant="outline"
                   className={cn(
                     'h-10 justify-start font-normal',
-                    !form.foundedOn && 'text-ink-500'
+                    !form.foundedOn && 'text-ink-500',
+                    errors.foundedOn &&
+                      'border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/20'
                   )}
                 >
                   <CalendarIcon className="w-4 h-4" />
@@ -126,6 +173,7 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
                 />
               </PopoverContent>
             </Popover>
+            <FieldError message={errors.foundedOn} />
           </div>
         </div>
 
@@ -136,8 +184,10 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
             value={form.address}
             onChange={(e) => update('address')(e.target.value)}
             placeholder="Full street address"
-            required
+            error={Boolean(errors.address)}
+            aria-describedby={errors.address ? 'company-address-error' : undefined}
           />
+          <FieldError message={errors.address} />
         </div>
 
         <div>
@@ -159,7 +209,9 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
               value={form.logoText}
               onChange={(e) => update('logoText')(e.target.value)}
               placeholder="G"
+              error={Boolean(errors.logoText)}
             />
+            <FieldError message={errors.logoText} />
           </div>
           <div>
             <Label htmlFor="company-logo-color">Logo Color</Label>

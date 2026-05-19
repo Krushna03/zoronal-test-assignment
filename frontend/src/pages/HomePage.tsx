@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MapPin, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 import { fetchCompanies } from '../api/companies';
 import type { Company, CompanySort } from '../types';
 import { CompanyCard } from '../components/CompanyCard';
@@ -16,19 +17,8 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export const HomePage = () => {
   const [params] = useSearchParams();
@@ -36,7 +26,6 @@ export const HomePage = () => {
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [city, setCity] = useState('Indore, Madhya Pradesh, India');
   const [cityInput, setCityInput] = useState(city);
@@ -46,12 +35,12 @@ export const HomePage = () => {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const data = await fetchCompanies({ city, sort, search });
       setCompanies(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load companies');
+      const message = err instanceof Error ? err.message : 'Failed to load companies';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -160,12 +149,6 @@ export const HomePage = () => {
           ) : null}
           Result Found: {loading ? '…' : resultCount}
         </div>
-
-        {error && (
-          <div className="rounded-md bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 mb-4">
-            {error}
-          </div>
-        )}
 
         <div className="space-y-5">
           {loading ? (

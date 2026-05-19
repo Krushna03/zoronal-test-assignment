@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ChevronLeft, MapPin, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Company, Review, ReviewSort } from '../types';
 import { fetchCompanyById } from '../api/companies';
 import { fetchReviewsByCompany } from '../api/reviews';
@@ -11,19 +12,8 @@ import { AddReviewForm } from '../components/AddReviewForm';
 import { formatDate } from '../utils/format';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export const CompanyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,7 +32,9 @@ export const CompanyDetailPage = () => {
       const c = await fetchCompanyById(id);
       setCompany(c);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load company');
+      const message = err instanceof Error ? err.message : 'Failed to load company';
+      setError(message);
+      toast.error(message);
     }
   }, [id]);
 
@@ -53,7 +45,8 @@ export const CompanyDetailPage = () => {
       setReviews(list);
       setAvgRating(avg);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load reviews');
+      const message = err instanceof Error ? err.message : 'Failed to load reviews';
+      toast.error(message);
     }
   }, [id, sort]);
 
