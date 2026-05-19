@@ -114,8 +114,8 @@ export const AddCompanyForm = ({ onCreated, onCancel }: AddCompanyFormProps) => 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
-      <div className="p-6 space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0" noValidate>
+      <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
         <div>
           <Label htmlFor="company-name">Company Name *</Label>
           <Input

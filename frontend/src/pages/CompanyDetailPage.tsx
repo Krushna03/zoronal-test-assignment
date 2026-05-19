@@ -70,7 +70,7 @@ export const CompanyDetailPage = () => {
 
   if (loading && !company) {
     return (
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Card className="p-10 animate-pulse h-48" />
       </main>
     );
@@ -78,7 +78,7 @@ export const CompanyDetailPage = () => {
 
   if (error && !company) {
     return (
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="rounded-md bg-red-50 border border-red-200 text-red-700 px-4 py-3">
           {error}
         </div>
@@ -92,7 +92,7 @@ export const CompanyDetailPage = () => {
   if (!company) return null;
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-8">
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <Button
         asChild
         variant="ghost"
@@ -105,45 +105,50 @@ export const CompanyDetailPage = () => {
         </Link>
       </Button>
 
-      <Card className="p-6">
-        <div className="flex items-start gap-5 flex-wrap">
-          <CompanyLogo
-            text={company.logoText}
-            bgColor={company.logoBgColor}
-            imageUrl={company.logoUrl}
-            name={company.name}
-            size="md"
-          />
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5">
+          <div className="flex items-start gap-4 sm:contents">
+            <CompanyLogo
+              text={company.logoText}
+              bgColor={company.logoBgColor}
+              imageUrl={company.logoUrl}
+              name={company.name}
+              size="md"
+            />
 
-          <div className="flex-1 min-w-[260px]">
-            <h1 className="text-xl font-bold text-ink-900">{company.name}</h1>
-            <p className="text-sm text-ink-500 mt-1 flex items-start gap-1.5">
-              <MapPin className="w-4 h-4 mt-0.5 text-ink-500 flex-shrink-0" strokeWidth={2} />
-              {company.address}
-            </p>
-
-            <div className="mt-3 flex items-center gap-3 flex-wrap">
-              <StarRating value={avgRating} showValue size="md" />
-              <span className="text-sm text-ink-700 font-medium">
-                {reviews.length} Reviews
-              </span>
-            </div>
-
-            {company.description && (
-              <p className="text-sm text-ink-700 mt-3 max-w-2xl">
-                {company.description}
+            <div className="flex-1 min-w-0 sm:min-w-[260px]">
+              <h1 className="text-lg sm:text-xl font-bold text-ink-900 break-words">
+                {company.name}
+              </h1>
+              <p className="text-sm text-ink-500 mt-1 flex items-start gap-1.5">
+                <MapPin className="w-4 h-4 mt-0.5 text-ink-500 flex-shrink-0" strokeWidth={2} />
+                <span className="break-words">{company.address}</span>
               </p>
-            )}
+
+              <div className="mt-3 flex items-center gap-3 flex-wrap">
+                <StarRating value={avgRating} showValue size="md" />
+                <span className="text-sm text-ink-700 font-medium">
+                  {reviews.length} Reviews
+                </span>
+              </div>
+
+              {company.description && (
+                <p className="text-sm text-ink-700 mt-3 max-w-2xl">
+                  {company.description}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="flex flex-col items-end gap-3">
-            <span className="text-xs text-ink-500">
+          <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between gap-3 w-full sm:w-auto">
+            <span className="text-xs text-ink-500 order-2 sm:order-1">
               Founded on&nbsp;{formatDate(company.foundedOn)}
             </span>
             <Button
               type="button"
               variant="brand"
               onClick={handleOpenAddReview}
+              className="order-1 sm:order-2"
             >
               <Plus className="w-4 h-4" />
               Add Review
@@ -151,15 +156,15 @@ export const CompanyDetailPage = () => {
           </div>
         </div>
 
-        <hr className="my-6 border-ink-200" />
+        <hr className="my-5 sm:my-6 border-ink-200" />
 
-        <div className="flex items-center justify-between flex-wrap gap-3 mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
           <span className="text-xs text-ink-500">
             Result Found: {reviews.length}
           </span>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <label htmlFor="review-sort" className="text-sm text-ink-500">
+          <div className="flex items-center gap-2">
+            <label htmlFor="review-sort" className="text-sm text-ink-500 whitespace-nowrap">
               Sort by:
             </label>
             <Select value={sort} onValueChange={handleSortChange}>

@@ -49,9 +49,9 @@ export const ReviewCard = ({ review }: ReviewCardProps) => {
   };
 
   return (
-    <article className="py-5 border-t border-ink-200 first:border-t-0">
-      <div className="flex items-start gap-4">
-        <Avatar>
+    <article className="py-4 sm:py-5 border-t border-ink-200 first:border-t-0">
+      <div className="flex items-start gap-3 sm:gap-4">
+        <Avatar className="flex-shrink-0">
           {review.avatarUrl && (
             <AvatarImage src={review.avatarUrl} alt={review.fullName} />
           )}
@@ -59,9 +59,9 @@ export const ReviewCard = ({ review }: ReviewCardProps) => {
         </Avatar>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h4 className="font-bold text-ink-900">{review.fullName}</h4>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
+            <div className="min-w-0">
+              <h4 className="font-bold text-ink-900 break-words">{review.fullName}</h4>
               <p className="text-xs text-ink-500 mt-0.5">
                 {formatDate(review.createdAt, true)}
               </p>

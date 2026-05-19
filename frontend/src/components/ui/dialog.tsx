@@ -32,14 +32,14 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-0 border border-ink-200 bg-white shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-xl max-h-[90vh] overflow-hidden',
+        'fixed left-1/2 top-1/2 z-50 flex flex-col w-[calc(100%-1rem)] sm:w-full max-w-lg -translate-x-1/2 -translate-y-1/2 border border-ink-200 bg-white shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 rounded-lg sm:rounded-xl max-h-[calc(100vh-2rem)] sm:max-h-[90vh] overflow-hidden',
         className
       )}
       {...props}
     >
       {children}
       <DialogPrimitive.Close
-        className="absolute right-4 top-4 rounded-md w-9 h-9 flex items-center justify-center text-ink-500 hover:bg-ink-100 focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:pointer-events-none"
+        className="absolute right-3 top-3 sm:right-4 sm:top-4 rounded-md w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-ink-500 hover:bg-ink-100 focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:pointer-events-none"
         aria-label="Close"
       >
         <X className="h-5 w-5" />
@@ -52,7 +52,7 @@ DialogContent.displayName = DialogPrimitive.Content.displayName;
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex items-center justify-between px-6 py-4 border-b border-ink-200',
+      'flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-ink-200 flex-shrink-0',
       className
     )}
     {...props}
@@ -62,7 +62,10 @@ DialogHeader.displayName = 'DialogHeader';
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex items-center justify-end gap-3 px-6 py-4 border-t border-ink-200', className)}
+    className={cn(
+      'flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-ink-200 flex-shrink-0',
+      className
+    )}
     {...props}
   />
 );
