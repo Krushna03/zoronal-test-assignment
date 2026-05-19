@@ -30,7 +30,7 @@ The UI follows the provided Figma design (purple/violet brand, "Review&RATE" log
 ## Project Structure
 
 ```
-test-2/
+zoronal-assignment/
 ├── backend/
 │   ├── src/
 │   │   ├── config/db.ts                    # MongoDB connection
@@ -171,8 +171,8 @@ Base URL: `http://localhost:5000/api`
 
 | Variable        | Default                                        | Description                       |
 | --------------- | ---------------------------------------------- | --------------------------------- |
-| `PORT`          | `5000`                                         | Express port                      |
-| `MONGO_URI`     | `mongodb://127.0.0.1:27017/review_rate`        | Mongo connection string           |
-| `CLIENT_ORIGIN` | `http://localhost:5173`                        | Allowed CORS origin for the SPA   |
+| `PORT`          |  Na                                            | Express port                      |
+| `MONGO_URI`     |  NA                                            | Mongo connection string           |
+| `CLIENT_ORIGIN` |  NA                                            | Allowed CORS origin for the SPA   |
 
 For the frontend, you can optionally set `VITE_API_URL` (e.g. `http://localhost:5000/api`) if you don't want to use the Vite proxy.
